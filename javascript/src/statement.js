@@ -20,6 +20,17 @@ function calculateCost(perf, play) {
     }
     return costForPerformance;
 }
+
+function calculateVolumeCredits(perf, play) {
+    let volumeCredits = 0;
+    volumeCredits += Math.max(perf.audience - 30, 0);
+
+    // add extra credit for every ten comedy attendees
+    if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
+
+    return volumeCredits;
+}
+
 function statement (invoice, plays) {
     let totalAmount = 0;
     let volumeCredits = 0;
@@ -31,11 +42,8 @@ function statement (invoice, plays) {
     for (let perf of invoice.performances) {
         const play = plays[perf.playID];
         const costForPerformance = calculateCost(perf, play)
+        volumeCredits += calculateVolumeCredits(perf, play)
         
-        // add volume credits
-        volumeCredits += Math.max(perf.audience - 30, 0);
-        // add extra credit for every ten comedy attendees
-        if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
         // print line for this order
         result += ` ${play.name}: ${format(costForPerformance/100)} (${perf.audience} seats)\n`;
         totalAmount += costForPerformance;
