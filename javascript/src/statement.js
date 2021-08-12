@@ -1,4 +1,3 @@
-
 function calculateCostForTragedy(perf) {
     let costForPerformance = 40000;
     if (perf.audience > 30) {
@@ -43,15 +42,11 @@ const genreConfigurator = {
     }
 }
 
-function calculateCost(perf, play) {
-    switch (play.type) {
-        case "tragedy":
-            return genreConfigurator[play.type].cost(perf)
-        case "comedy":
-           return genreConfigurator[play.type].cost(perf)
-        default:
-            throw new Error(`unknown type: ${play.type}`);
+function calculateCost(perf, type) {
+    if (!genreConfigurator[type]) {
+            throw new Error(`unknown type: ${type}`);
     }
+    return genreConfigurator[type].cost(perf)
 }
 
 function calculateVolumeCredits(perf, play) {
@@ -68,7 +63,7 @@ function statement (invoice, plays) {
 
     for (let perf of invoice.performances) {
         const play = plays[perf.playID];
-        const costForPerformance = calculateCost(perf, play)
+        const costForPerformance = calculateCost(perf, play.type)
         volumeCredits += calculateVolumeCredits(perf, play)
         
         // print line for this order
