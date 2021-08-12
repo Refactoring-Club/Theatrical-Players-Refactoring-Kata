@@ -1,19 +1,40 @@
 
-function calculateCost(perf, play) {
-    let costForPerformance = 0;
-    switch (play.type) {
-        case "tragedy":
-            costForPerformance = 40000;
-            if (perf.audience > 30) {
-                costForPerformance += 1000 * (perf.audience - 30);
-            }
-            break;
-        case "comedy":
-            costForPerformance = 30000;
+function calculateCostForTragedy(perf) {
+    let costForPerformance = 40000;
+    if (perf.audience > 30) {
+        costForPerformance += 1000 * (perf.audience - 30);
+    }
+    return costForPerformance
+
+}
+
+function calculateCostForComedy(perf) {
+            let costForPerformance = 30000;
             if (perf.audience > 20) {
                 costForPerformance += 10000 + 500 * (perf.audience - 20);
             }
             costForPerformance += 300 * perf.audience;
+            return costForPerformance;
+
+}
+
+const genreConfigurator = {
+    tragedy: {
+        cost: calculateCostForTragedy,
+    },
+    comedy: {
+        cost: calculateCostForComedy,
+    }
+}
+
+function calculateCost(perf, play) {
+    let costForPerformance = 0;
+    switch (play.type) {
+        case "tragedy":
+            costForPerformance += genreConfigurator[play.type].cost(perf)
+            break;
+        case "comedy":
+            costForPerformance += genreConfigurator[play.type].cost(perf)
             break;
         default:
             throw new Error(`unknown type: ${play.type}`);
