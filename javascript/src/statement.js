@@ -18,38 +18,44 @@ function calculateCostForComedy(perf) {
 
 }
 
-const genreConfigurator = {
-    tragedy: {
-        cost: calculateCostForTragedy,
-    },
-    comedy: {
-        cost: calculateCostForComedy,
-    }
+function calculateVolumeCreditsForTragedy(perf) {
+    return Math.max(perf.audience - 30, 0);
 }
 
-function calculateCost(perf, play) {
-    let costForPerformance = 0;
-    switch (play.type) {
-        case "tragedy":
-            costForPerformance += genreConfigurator[play.type].cost(perf)
-            break;
-        case "comedy":
-            costForPerformance += genreConfigurator[play.type].cost(perf)
-            break;
-        default:
-            throw new Error(`unknown type: ${play.type}`);
-    }
-    return costForPerformance;
-}
-
-function calculateVolumeCredits(perf, play) {
+function calculateVolumeCreditsForComedy(perf) {
     let volumeCredits = 0;
     volumeCredits += Math.max(perf.audience - 30, 0);
 
     // add extra credit for every ten comedy attendees
-    if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
+    volumeCredits += Math.floor(perf.audience / 5);
 
     return volumeCredits;
+}
+
+const genreConfigurator = {
+    tragedy: {
+        cost: calculateCostForTragedy,
+        volumeCredits: calculateVolumeCreditsForTragedy,
+    },
+    comedy: {
+        cost: calculateCostForComedy,
+        volumeCredits: calculateVolumeCreditsForComedy,
+    }
+}
+
+function calculateCost(perf, play) {
+    switch (play.type) {
+        case "tragedy":
+            return genreConfigurator[play.type].cost(perf)
+        case "comedy":
+           return genreConfigurator[play.type].cost(perf)
+        default:
+            throw new Error(`unknown type: ${play.type}`);
+    }
+}
+
+function calculateVolumeCredits(perf, play) {
+    return genreConfigurator[play['type']].volumeCredits(perf)
 }
 
 function statement (invoice, plays) {
