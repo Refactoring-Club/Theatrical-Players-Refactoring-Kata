@@ -1,17 +1,24 @@
 function calculateCostForTragedy(perf) {
-    let costForPerformance = 40000;
-    if (perf.audience > 30) {
-        costForPerformance += 1000 * (perf.audience - 30);
-    }
-    return costForPerformance;
+    return calculateCostForGenre(perf, 40000, 30, 0, 1000, 0);
 }
 
 function calculateCostForComedy(perf) {
-    let costForPerformance = 30000;
-    if (perf.audience > 20) {
-        costForPerformance += 10000 + 500 * (perf.audience - 20);
+    return calculateCostForGenre(perf, 30000, 20, 10000, 500, 300)
+}
+
+function calculateCostForGenre(
+    perf,
+    baseCostForPerformance,
+    minAudienceForAdditionalCost,
+    fixedBonusForAudienceAboveThreshold,
+    perTicketBonusForAudienceAboveThreshold,
+    perTicketBonus,
+) {
+    let costForPerformance = baseCostForPerformance;
+    if (perf.audience > minAudienceForAdditionalCost) {
+        costForPerformance += fixedBonusForAudienceAboveThreshold + perTicketBonusForAudienceAboveThreshold * (perf.audience - minAudienceForAdditionalCost);
     }
-    costForPerformance += 300 * perf.audience;
+    costForPerformance += perTicketBonus * perf.audience;
     return costForPerformance;
 }
 
