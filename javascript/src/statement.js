@@ -12,28 +12,28 @@ class Genre {
         this.perTicketBonusForAudienceAboveThreshold = perTicketBonusForAudienceAboveThreshold;
         this.perTicketBonus = perTicketBonus;
     }
+
+    calculateCost(perf) {
+        let costForPerformance = this.baseCostForPerformance;
+        if (perf.audience > this.minAudienceForAdditionalCost) {
+            costForPerformance +=
+                this.fixedBonusForAudienceAboveThreshold +
+                this.perTicketBonusForAudienceAboveThreshold *
+                    (perf.audience - this.minAudienceForAdditionalCost);
+        }
+        costForPerformance += this.perTicketBonus * perf.audience;
+        return costForPerformance;
+    }
 }
 
 function calculateCostForTragedy(perf) {
     const genre = new Genre(40000, 30, 0, 1000, 0);
-    return calculateCostForGenre(perf, genre);
+    return genre.calculateCost(perf)
 }
 
 function calculateCostForComedy(perf) {
     const genre = new Genre(30000, 20, 10000, 500, 300);
-    return calculateCostForGenre(perf, genre);
-}
-
-function calculateCostForGenre(perf, genre) {
-    let costForPerformance = genre.baseCostForPerformance;
-    if (perf.audience > genre.minAudienceForAdditionalCost) {
-        costForPerformance +=
-            genre.fixedBonusForAudienceAboveThreshold +
-            genre.perTicketBonusForAudienceAboveThreshold *
-                (perf.audience - genre.minAudienceForAdditionalCost);
-    }
-    costForPerformance += genre.perTicketBonus * perf.audience;
-    return costForPerformance;
+    return genre.calculateCost(perf)
 }
 
 function calculateVolumeCreditsForTragedy(perf) {
