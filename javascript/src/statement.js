@@ -1,24 +1,38 @@
+class Genre {
+    constructor(
+        baseCostForPerformance,
+        minAudienceForAdditionalCost,
+        fixedBonusForAudienceAboveThreshold,
+        perTicketBonusForAudienceAboveThreshold,
+        perTicketBonus
+    ) {
+        this.baseCostForPerformance = baseCostForPerformance;
+        this.minAudienceForAdditionalCost = minAudienceForAdditionalCost;
+        this.fixedBonusForAudienceAboveThreshold = fixedBonusForAudienceAboveThreshold;
+        this.perTicketBonusForAudienceAboveThreshold = perTicketBonusForAudienceAboveThreshold;
+        this.perTicketBonus = perTicketBonus;
+    }
+}
+
 function calculateCostForTragedy(perf) {
-    return calculateCostForGenre(perf, 40000, 30, 0, 1000, 0);
+    const genre = new Genre(40000, 30, 0, 1000, 0);
+    return calculateCostForGenre(perf, genre);
 }
 
 function calculateCostForComedy(perf) {
-    return calculateCostForGenre(perf, 30000, 20, 10000, 500, 300)
+    const genre = new Genre(30000, 20, 10000, 500, 300);
+    return calculateCostForGenre(perf, genre);
 }
 
-function calculateCostForGenre(
-    perf,
-    baseCostForPerformance,
-    minAudienceForAdditionalCost,
-    fixedBonusForAudienceAboveThreshold,
-    perTicketBonusForAudienceAboveThreshold,
-    perTicketBonus,
-) {
-    let costForPerformance = baseCostForPerformance;
-    if (perf.audience > minAudienceForAdditionalCost) {
-        costForPerformance += fixedBonusForAudienceAboveThreshold + perTicketBonusForAudienceAboveThreshold * (perf.audience - minAudienceForAdditionalCost);
+function calculateCostForGenre(perf, genre) {
+    let costForPerformance = genre.baseCostForPerformance;
+    if (perf.audience > genre.minAudienceForAdditionalCost) {
+        costForPerformance +=
+            genre.fixedBonusForAudienceAboveThreshold +
+            genre.perTicketBonusForAudienceAboveThreshold *
+                (perf.audience - genre.minAudienceForAdditionalCost);
     }
-    costForPerformance += perTicketBonus * perf.audience;
+    costForPerformance += genre.perTicketBonus * perf.audience;
     return costForPerformance;
 }
 
