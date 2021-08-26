@@ -4,13 +4,15 @@ class Genre {
         minAudienceForAdditionalCost,
         fixedBonusForAudienceAboveThreshold,
         perTicketBonusForAudienceAboveThreshold,
-        perTicketBonus
+        perTicketBonus,
+        audienceChunk,
     ) {
         this.baseCostForPerformance = baseCostForPerformance;
         this.minAudienceForAdditionalCost = minAudienceForAdditionalCost;
         this.fixedBonusForAudienceAboveThreshold = fixedBonusForAudienceAboveThreshold;
         this.perTicketBonusForAudienceAboveThreshold = perTicketBonusForAudienceAboveThreshold;
         this.perTicketBonus = perTicketBonus;
+        this.audienceChunk = audienceChunk;
     }
 
     calculateCost(perf) {
@@ -25,34 +27,48 @@ class Genre {
         return costForPerformance;
     }
 
-    calculateVolumeCredits(perf, audienceChunk) {
+    calculateVolumeCredits(perf) {
         let volumeCredits = 0;
         volumeCredits += Math.max(perf.audience - 30, 0);
 
-        if (audienceChunk !== 0) {
-            volumeCredits += Math.floor(perf.audience / audienceChunk);
+        if (this.audienceChunk !== 0) {
+            volumeCredits += Math.floor(perf.audience / this.audienceChunk);
         }
 
         return volumeCredits;
     }
 }
 
+class Comedy extends Genre {
+    constructor() {
+        super(30000, 20, 10000, 500, 300, 5);
+    }
+}
+
+class Tragedy extends Genre {
+    constructor() {
+        super(40000, 30, 0, 1000, 0, 0);
+    }
+}
+
 function calculateCostForTragedy(perf) {
-    const genre = new Genre(40000, 30, 0, 1000, 0);
+    const genre = new Tragedy();
     return genre.calculateCost(perf);
 }
 
 function calculateCostForComedy(perf) {
-    const genre = new Genre(30000, 20, 10000, 500, 300);
+    const genre = new Comedy();
     return genre.calculateCost(perf);
 }
 
 function calculateVolumeCreditsForTragedy(perf) {
-    return new Genre().calculateVolumeCredits(perf, 0)
+    const genre = new Tragedy();
+    return genre.calculateVolumeCredits(perf)
 }
 
 function calculateVolumeCreditsForComedy(perf) {
-    return new Genre().calculateVolumeCredits(perf, 5)
+    const genre = new Comedy();
+    return genre.calculateVolumeCredits(perf)
 }
 
 const genreConfigurator = {
