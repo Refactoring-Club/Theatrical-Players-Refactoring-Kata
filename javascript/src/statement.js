@@ -24,30 +24,35 @@ class Genre {
         costForPerformance += this.perTicketBonus * perf.audience;
         return costForPerformance;
     }
+
+    calculateVolumeCredits(perf, audienceChunk) {
+        let volumeCredits = 0;
+        volumeCredits += Math.max(perf.audience - 30, 0);
+
+        if (audienceChunk !== 0) {
+            volumeCredits += Math.floor(perf.audience / audienceChunk);
+        }
+
+        return volumeCredits;
+    }
 }
 
 function calculateCostForTragedy(perf) {
     const genre = new Genre(40000, 30, 0, 1000, 0);
-    return genre.calculateCost(perf)
+    return genre.calculateCost(perf);
 }
 
 function calculateCostForComedy(perf) {
     const genre = new Genre(30000, 20, 10000, 500, 300);
-    return genre.calculateCost(perf)
+    return genre.calculateCost(perf);
 }
 
 function calculateVolumeCreditsForTragedy(perf) {
-    return Math.max(perf.audience - 30, 0);
+    return new Genre().calculateVolumeCredits(perf, 0)
 }
 
 function calculateVolumeCreditsForComedy(perf) {
-    let volumeCredits = 0;
-    volumeCredits += Math.max(perf.audience - 30, 0);
-
-    // add extra credit for every ten comedy attendees
-    volumeCredits += Math.floor(perf.audience / 5);
-
-    return volumeCredits;
+    return new Genre().calculateVolumeCredits(perf, 5)
 }
 
 const genreConfigurator = {
