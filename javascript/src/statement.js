@@ -1,33 +1,41 @@
-class Genre {
+class CostCalculator {
     constructor(
         baseCostForPerformance,
         minAudienceForAdditionalCost,
         fixedBonusForAudienceAboveThreshold,
         perTicketBonusForAudienceAboveThreshold,
         perTicketBonus,
-        audienceChunk,
     ) {
         this.baseCostForPerformance = baseCostForPerformance;
         this.minAudienceForAdditionalCost = minAudienceForAdditionalCost;
         this.fixedBonusForAudienceAboveThreshold = fixedBonusForAudienceAboveThreshold;
         this.perTicketBonusForAudienceAboveThreshold = perTicketBonusForAudienceAboveThreshold;
         this.perTicketBonus = perTicketBonus;
-        this.audienceChunk = audienceChunk;
     }
 
-    calculateCost(perf) {
+    calculate(perf) {
         let costForPerformance = this.baseCostForPerformance;
         if (perf.audience > this.minAudienceForAdditionalCost) {
             costForPerformance +=
                 this.fixedBonusForAudienceAboveThreshold +
                 this.perTicketBonusForAudienceAboveThreshold *
-                    (perf.audience - this.minAudienceForAdditionalCost);
+                (perf.audience - this.minAudienceForAdditionalCost);
         }
         costForPerformance += this.perTicketBonus * perf.audience;
         return costForPerformance;
+
     }
 
-    calculateVolumeCredits(perf) {
+}
+
+class VolumeCreditCalculator {
+    constructor(
+        audienceChunk = 0,
+    ) {
+        this.audienceChunk = audienceChunk;
+    }
+
+    calculate(perf) {
         let volumeCredits = 0;
         volumeCredits += Math.max(perf.audience - 30, 0);
 
@@ -39,15 +47,33 @@ class Genre {
     }
 }
 
+class Genre {
+    constructor(
+        costCalculator,
+        volumeCreditCalculator,
+    ) {
+        this.costCalculator = costCalculator;
+        this.volumeCreditCalculator = volumeCreditCalculator;
+    }
+
+    calculateCost(perf) {
+        return this.costCalculator.calculate(perf)
+    }
+
+    calculateVolumeCredits(perf) {
+        return this.volumeCreditCalculator.calculate(perf)
+    }
+}
+
 class Comedy extends Genre {
     constructor() {
-        super(30000, 20, 10000, 500, 300, 5);
+        super(new CostCalculator(30000,20, 10000, 500, 300), new VolumeCreditCalculator(5));
     }
 }
 
 class Tragedy extends Genre {
     constructor() {
-        super(40000, 30, 0, 1000, 0, 0);
+        super(new CostCalculator(40000, 30, 0, 1000, 0), new VolumeCreditCalculator());
     }
 }
 
