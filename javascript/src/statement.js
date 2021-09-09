@@ -25,7 +25,6 @@ class CostCalculator {
         return costForPerformance;
 
     }
-
 }
 
 class VolumeCreditCalculator {
@@ -55,68 +54,32 @@ class Genre {
         this.costCalculator = costCalculator;
         this.volumeCreditCalculator = volumeCreditCalculator;
     }
-
-    calculateCost(perf) {
+    cost(perf) {
         return this.costCalculator.calculate(perf)
     }
-
-    calculateVolumeCredits(perf) {
+    volumeCredits(perf) {
         return this.volumeCreditCalculator.calculate(perf)
     }
 }
 
-class Comedy extends Genre {
-    constructor() {
-        super(new CostCalculator(30000,20, 10000, 500, 300), new VolumeCreditCalculator(5));
+class GenreFactory {
+    static createFrom(genreType) {
+        switch (genreType) {
+            case 'comedy': {
+                const costCalculator = new CostCalculator(30000, 20, 10000, 500, 300)
+                const volumeCreditCalculator = new VolumeCreditCalculator(5)
+                return new Genre(costCalculator, volumeCreditCalculator)
+            }
+            case 'tragedy': {
+                const costCalculator = new CostCalculator(40000, 30, 0, 1000, 0)
+                const volumeCreditCalculator = new VolumeCreditCalculator()
+                return new Genre(costCalculator, volumeCreditCalculator)
+            }
+            default:
+                throw new Error(`unknown type: ${genreType}`);
+        }
+
     }
-}
-
-class Tragedy extends Genre {
-    constructor() {
-        super(new CostCalculator(40000, 30, 0, 1000, 0), new VolumeCreditCalculator());
-    }
-}
-
-function calculateCostForTragedy(perf) {
-    const genre = new Tragedy();
-    return genre.calculateCost(perf);
-}
-
-function calculateCostForComedy(perf) {
-    const genre = new Comedy();
-    return genre.calculateCost(perf);
-}
-
-function calculateVolumeCreditsForTragedy(perf) {
-    const genre = new Tragedy();
-    return genre.calculateVolumeCredits(perf)
-}
-
-function calculateVolumeCreditsForComedy(perf) {
-    const genre = new Comedy();
-    return genre.calculateVolumeCredits(perf)
-}
-
-const genreConfigurator = {
-    tragedy: {
-        cost: calculateCostForTragedy,
-        volumeCredits: calculateVolumeCreditsForTragedy,
-    },
-    comedy: {
-        cost: calculateCostForComedy,
-        volumeCredits: calculateVolumeCreditsForComedy,
-    },
-};
-
-function calculateCost(perf, type) {
-    if (!genreConfigurator[type]) {
-        throw new Error(`unknown type: ${type}`);
-    }
-    return genreConfigurator[type].cost(perf);
-}
-
-function calculateVolumeCredits(perf, play) {
-    return genreConfigurator[play["type"]].volumeCredits(perf);
 }
 
 function statement(invoice, plays) {
@@ -131,8 +94,10 @@ function statement(invoice, plays) {
 
     for (let perf of invoice.performances) {
         const play = plays[perf.playID];
-        const costForPerformance = calculateCost(perf, play.type);
-        volumeCredits += calculateVolumeCredits(perf, play);
+
+        const genre = GenreFactory.createFrom(play.type)
+        const costForPerformance = genre.cost(perf)
+        volumeCredits += genre.volumeCredits(perf)
 
         // print line for this order
         result += ` ${play.name}: ${format(costForPerformance / 100)} (${
